@@ -42,12 +42,12 @@
                             <div class="row mt-3">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <small style="color: red;display: none" id="required_old_pass" >Old password is required</small>
+                                        <small style="color: red;display: none" id="required_old_pass" >Old password is required.</small>
                                         <label class="form-control-label">Old password</label>
                                         <input id="old__password" class="form-control" name="old_pass" type="password">
         
                                         <span toggle="#old__password" class="fa fa-fw fa-eye-slash field-icon toggle-password"></span>
-                                        <small style="color: red;display: none" id="error_old_pass" >Please enter correct old password</small>
+                                        <small style="color: red;display: none" id="error_old_pass" >Please enter correct old password.</small>
                                     </div>
                                 </div>
                             </div>
