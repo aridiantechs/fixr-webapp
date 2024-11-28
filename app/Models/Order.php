@@ -10,7 +10,7 @@ use Carbon\Carbon;
 class Order extends Model
 {
     use HasFactory;
-    protected $fillable = ['uuid', 'type', 'payload', 'user_id'];
+    protected $fillable = ['uuid', 'type', 'payload', 'user_id', 'file'];
 
     public function getTypeAttribute($type){
         return strtolower($type);

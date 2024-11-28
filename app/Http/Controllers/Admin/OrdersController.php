@@ -33,14 +33,23 @@ class OrdersController extends Controller
         $order_uuid = $request->order_uuid;
 
         $orders = Order::where('uuid', $order_uuid)
-            ->where('uuid', $order_uuid)
+            /* ->where('uuid', $order_uuid)
             ->orderBy('created_at', 'desc')
             ->take(3)
-            ->get();
+            ->get(); */
+            ->first();
 
-        if ($orders->isEmpty()) {
+        if (!$orders || !$orders->file) {
             abort(404, 'Order not found');
         }
+
+        $path = storage_path("app/$orders->file");
+
+        if (!file_exists($path)) {
+            abort(404, "File not found.");
+        }
+    
+        return response()->file($path);
 
         $user_email = $orders->first()->user->email ?? 'N/A';
 

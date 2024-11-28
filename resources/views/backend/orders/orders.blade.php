@@ -68,14 +68,14 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th class="bold">#</th>
+                                            {{-- <th class="bold">#</th> --}}
                                             <th>uuid</th>
                                             <th>user</th>
                                             <th>type</th>
                                             <th>payload</th>
                                             <th>created at</th>
                                             <th>updated at</th>
-                                            <th>view order</th>
+                                            <th>view ticket</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -86,15 +86,22 @@
                                                 $updated_at = \Carbon\Carbon::parse($order->updated_at)->format('Y-m-d \a\t g:i A');
                                             @endphp
                                             <tr>
-                                                <td>{{++$counter}}</td>
+                                                {{-- <td>{{++$counter}}</td> --}}
                                                 <td>{{$order->uuid}}</td>
                                                 <td>{{$order->user->email}}</td>
                                                 <td>{{$order->type}}</td>
-                                                <td>{{$order->payload}}</td>
+                                                <td>
+                                                    @php
+                                                        $payload = is_string($order->payload) ? json_decode($order->payload) : $order->payload;
+                                                    @endphp
+                                                    @foreach ($payload as $key => $item)
+                                                        <b>{{$key}}: </b>{{$item}} <br>
+                                                    @endforeach
+                                                </td>
                                                 <td>{{$created_at}}</td>
                                                 <td>{{$updated_at}}</td>
                                                 <td>
-                                                    <a href="{{route('backend.order.view', ['order_uuid' =>$order->uuid])}}">
+                                                    <a href="{{route('backend.order.view', ['order_uuid' =>$order->uuid])}}" target="_blank">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                 </td>

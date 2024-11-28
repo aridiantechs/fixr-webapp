@@ -48,10 +48,10 @@ class AuthController extends Controller
             [
                 "required",
                 Password::min(8)
-                ->letters()
+                /* ->letters()
                 ->mixedCase()
                 ->numbers()
-                ->symbols()
+                ->symbols() */
             ],
             "date_of_birth" => "required|date_format:Y-m-d",
             // "profile_image" => "nullable|mimes:jpeg,jpg,png,gif|max:10000"

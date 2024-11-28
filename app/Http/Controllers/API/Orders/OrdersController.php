@@ -35,7 +35,7 @@ class OrdersController extends Controller
         if($request->ticket_pdf){
             $file = $request->file('ticket_pdf');
             $filename = time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('ticket_pdf', $filename);
+            $path = $file->storeAs('public/ticket_pdf', $filename);
 
             $order->file = $path;
             $order->save();
