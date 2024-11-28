@@ -78,7 +78,7 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="font-weight-semibold" for="password">Password:</label>
-                                            <a class="float-right font-size-13 text-muted" href="{{ route('password.request') }}">Forget Password?</a>
+                                            {{-- <a class="float-right font-size-13 text-muted" href="{{ route('password.request') }}">Forget Password?</a> --}}
                                             <div class="input-affix m-b-10">
                                                 <i class="prefix-icon anticon anticon-lock"></i>
                                                 <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" id="password" placeholder="Password">
