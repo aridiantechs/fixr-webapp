@@ -23,7 +23,7 @@ class RedirectIfAuthenticated
         
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect()->route('backend.dashboard');
+                return redirect()->route('backend.orders.liveTracking');
             }
         }
 
