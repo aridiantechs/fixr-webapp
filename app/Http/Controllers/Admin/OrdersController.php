@@ -44,7 +44,6 @@ class OrdersController extends Controller
         }
 
         $path = storage_path("app/$orders->file");
-
         if (!file_exists($path)) {
             abort(404, "File not found.");
         }
