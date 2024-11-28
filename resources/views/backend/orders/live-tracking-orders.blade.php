@@ -12,6 +12,20 @@
     .stats-val{
         color: #e31c79;
     }
+
+    .bg-grey{
+        background: #f2f2f2;
+    }
+    .bg-info{
+        border: 1px solid;
+        border-color: rgb(70, 147, 255) !important;
+        background-color: rgb(236, 244, 255) !important;
+    }
+
+    .spinner-border{
+        width: 1.5rem;
+        height: 1.5rem;
+    }
 </style>
 @endsection
 
@@ -58,7 +72,7 @@
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
                             <h1 class="d-inline-block">Live Tracking</h1>
-                            <span class="mx-2" id="spinner"></span>
+                           {{--  <span class="mx-2" id="spinner"></span> --}}
                             {{-- <div>
                                 <a href="javascript:void(0);" class="btn btn-sm btn-default">View All</a>
                             </div> --}}
@@ -67,39 +81,56 @@
                             <div class="table-responsive" id="live_tracking_table">
                                 <table class="table table-hover">
                                     <thead>
-                                        <tr>
-                                            <th class="bold">#</th>
+                                        <tr class="bg-grey">
+                                            {{-- <th class="bold">#</th> --}}
                                             <th>uuid</th>
                                             <th>user</th>
                                             <th>type</th>
                                             <th>payload</th>
                                             <th>created at</th>
                                             <th>updated at</th>
-                                            <th>view order</th>
+                                            {{-- <th>view order</th> --}}
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @php $counter = 0; @endphp
-                                        @foreach($grouped_orders as $key => $order)
-                                            @php
-                                                $created_at = \Carbon\Carbon::parse($order->created_at)->format('Y-m-d \a\t g:i A');
-                                                $updated_at = \Carbon\Carbon::parse($order->updated_at)->format('Y-m-d \a\t g:i A');
-                                            @endphp
-                                            <tr>
-                                                <td>{{++$counter}}</td>
-                                                <td>{{$order->uuid}}</td>
-                                                <td>{{$order->user->email}}</td>
-                                                <td>{{$order->type}}</td>
-                                                <td>{{$order->payload}}</td>
-                                                <td>{{$created_at}}</td>
-                                                <td>{{$updated_at}}</td>
-                                               <td>
-                                                    <a href="{{route('backend.order.view', ['order_uuid' =>$order->uuid])}}">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                </td>
+                                        <tr>
+                                            <td colspan="6" class="p-0">
+                                                <div class="bg-info p-1">
+                                                    <span class="spinner-border text-danger" role="status">
+                                                    </span>
+                                                    <span class="mx-2" style="font-size:1.2em;">Retrieving data...</span>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        @php $counter = 0; $ref_id = count($grouped_orders) ? $grouped_orders->first()->first()->id : null; @endphp
+                                        @foreach($grouped_orders as $key => $orders)
+                                            @foreach ($orders as $order)
+                                                @php
+                                                    $created_at = \Carbon\Carbon::parse($order->created_at)->format('Y-m-d \a\t g:i A');
+                                                    $updated_at = \Carbon\Carbon::parse($order->updated_at)->format('Y-m-d \a\t g:i A');
+                                                @endphp
+                                                <tr>
+                                                    <td>{{$order->uuid}}</td>
+                                                    <td>{{$order->user->email}}</td>
+                                                    <td>{{$order->type}}</td>
+                                                    <td>
+                                                        @php
+                                                            $payload = is_string($order->payload) ? json_decode($order->payload) : $order->payload;
+                                                        @endphp
+                                                        @foreach ($payload as $key => $item)
+                                                            <b>{{$key}}: </b>{{$item}} <br>
+                                                        @endforeach
+                                                    </td>
+                                                    <td>{{$created_at}}</td>
+                                                    <td>{{$updated_at}}</td>
+                                                    {{-- <td>
+                                                        <a href="{{route('backend.order.view', ['order_uuid' =>$order->uuid])}}">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                    </td> --}}
 
-                                            </tr>
+                                                </tr>
+                                            @endforeach
                                         @endforeach
                                     </tbody>
                                 </table>
@@ -122,6 +153,9 @@
                 url : "{{route("backend.orders.liveTracking")}}",
                 type : "GET",
                 dataType : "html",
+                data:{
+                    'ref_id':'{{$ref_id}}'
+                },
                 beforeSend : function(){
                     $("#spinner").html(`
                             <span class="spinner-border text-danger" role="status">
@@ -136,6 +170,8 @@
                     }, 1200);
                 },
                 error : function(xhr, status, response){
+                    console.log(status, response);
+                    
                     $("#spinner").html("");
                     $("#live_tracking_table").html(`
                     <div class="d-flex justify-content-center align-items-center" style="height:500px;">

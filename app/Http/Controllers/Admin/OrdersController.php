@@ -16,24 +16,27 @@ class OrdersController extends Controller
         return view("backend.orders.orders", compact('orders'));
     }
     public function live_tracking(Request $request){
-        $all_orders = Order::all();
+        $all_orders = Order::whereDate('created_at',now())
+            ->when($request->ajax() && !is_null(request()->ref_id),function($q){
+                $q->where('id','>=',request()->ref_id);
+            })->get();
 
-        $grouped_orders = $all_orders->groupBy('uuid')->map(function ($group) {
-            return $group->sortByDesc('created_at')->first();
-        });
+        $grouped_orders = $all_orders->groupBy('uuid');
+        //dd($grouped_orders);
         if($request->ajax()){
             return view('backend.orders.live-tracking-table-ajax', compact('grouped_orders'));
         }
         return view('backend.orders.live-tracking-orders', compact('grouped_orders'));
     }
-    public function view_order(Request $request){
-    $order_uuid = $request->order_uuid;
+    public function view_order(Request $request)
+    {
+        $order_uuid = $request->order_uuid;
 
-    $orders = Order::where('uuid', $order_uuid)
-        ->where('uuid', $order_uuid)
-        ->orderBy('created_at', 'desc')
-        ->take(3)
-        ->get();
+        $orders = Order::where('uuid', $order_uuid)
+            ->where('uuid', $order_uuid)
+            ->orderBy('created_at', 'desc')
+            ->take(3)
+            ->get();
 
         if ($orders->isEmpty()) {
             abort(404, 'Order not found');

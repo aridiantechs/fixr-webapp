@@ -13,13 +13,14 @@ class OrdersController extends Controller
     public function store(Request $request){
 
         $validator = Validator::make($request->all(), [
-            "uuid"=> "required|string",
-            "type"=> [
+            "uuid" => "required|string",
+            "type" => [
                 'required',
                 'string',
-                Rule::in(['checkout', 'purchased', 'cancelled'])
+                Rule::in(['ticket','checkout', 'purchased', 'cancelled'])
             ],
-            "payload"=> "required|string"
+            "payload" => "required|string",
+            "ticket_pdf" => "required_if:type,==,purchased,mimes:pdf"
         ],[
             "uuid.required"=> "Please provide uuid",
         ]);
@@ -30,6 +31,16 @@ class OrdersController extends Controller
             'user_id' => auth()->user()->id
         ]);
         $order = Order::create($request->all());
+        
+        if($request->ticket_pdf){
+            $file = $request->file('ticket_pdf');
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('ticket_pdf', $filename);
+
+            $order->file = $path;
+            $order->save();
+        }
+
         if($order)
             return api_response((Object)[], 200,"Order created successfully") ;
         return api_response((Object)[], 400,"Something went wrong...") ;
