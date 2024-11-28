@@ -1,0 +1,47 @@
+<?php
+
+namespace App\Console;
+
+use App\Jobs\ContractRenewJob;
+use App\Jobs\ContractReminderJob;
+use App\Jobs\ContractEndReminderJob;
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+
+class Kernel extends ConsoleKernel
+{
+    /**
+     * The Artisan commands provided by your application.
+     *
+     * @var array
+     */
+    protected $commands = [
+        //
+    ];
+
+    /**
+     * Define the application's command schedule.
+     *
+     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @return void
+     */
+    protected function schedule(Schedule $schedule)
+    {
+        // $schedule->command('inspire')->hourly();
+        $schedule->job(new ContractRenewJob)->everyMinute()->withoutOverlapping();
+        $schedule->job(new ContractEndReminderJob)->everyMinute()->withoutOverlapping();
+        // $schedule->job(new ChargePremiumUserJob)->monthlyOn(1, '05:00')->withoutOverlapping(15);
+    }
+
+    /**
+     * Register the commands for the application.
+     *
+     * @return void
+     */
+    protected function commands()
+    {
+        $this->load(__DIR__.'/Commands');
+
+        require base_path('routes/console.php');
+    }
+}
