@@ -32,7 +32,7 @@ class OrdersController extends Controller
     {
         $order_uuid = $request->order_uuid;
 
-        $orders = Order::where('uuid', $order_uuid)
+        $orders = Order::where('uuid', $order_uuid)->whereNotNull('file')
             /* ->where('uuid', $order_uuid)
             ->orderBy('created_at', 'desc')
             ->take(3)
