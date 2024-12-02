@@ -1017,6 +1017,12 @@ if (!function_exists('printTruncated')) {
 
         return $errors;
     }
+    function format_date_time($date_time){
+        $formated_date_time = Carbon::parse($date_time)->format(
+            'Y-m-d \a\t g:i A',
+        );
+        return $formated_date_time;
+    }
 
 }
 

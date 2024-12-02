@@ -11,19 +11,20 @@ use Illuminate\Support\Facades\DB;
 
 class OrdersController extends Controller
 {
-    public function index(Request $request){
-        $orders = Order::where('type', 'purchased')->orderBy('created_at','desc')->paginate(10);
+    public function index(Request $request)
+    {
+        $orders = Order::where('type', 'purchased')->orderBy('created_at', 'desc')->paginate(10);
         return view("backend.orders.orders", compact('orders'));
     }
-    public function live_tracking(Request $request){
-        $all_orders = Order::whereDate('created_at',now())
-            ->when($request->ajax() && !is_null(request()->ref_id),function($q){
-                $q->where('id','>=',request()->ref_id);
+    public function live_tracking(Request $request)
+    {
+        $all_orders = Order::whereDate('created_at', now())
+            ->when($request->ajax() && !is_null(request()->ref_id), function ($q) {
+                $q->where('id', '>=', request()->ref_id);
             })->get();
 
         $grouped_orders = $all_orders->groupBy('uuid');
-        //dd($grouped_orders);
-        if($request->ajax()){
+        if ($request->ajax()) {
             return view('backend.orders.live-tracking-table-ajax', compact('grouped_orders'));
         }
         return view('backend.orders.live-tracking-orders', compact('grouped_orders'));
@@ -47,7 +48,7 @@ class OrdersController extends Controller
         if (!file_exists($path)) {
             abort(404, "File not found.");
         }
-    
+
         return response()->file($path);
 
         $user_email = $orders->first()->user->email ?? 'N/A';
@@ -69,7 +70,7 @@ class OrdersController extends Controller
                     break;
             }
         }
-        $last_status = isset($checkout_time) ? ($orders->first()->type ?? 'N/A') :'N/A';
+        $last_status = isset($checkout_time) ? ($orders->first()->type ?? 'N/A') : 'N/A';
 
 
         return view('backend.orders.view-order', compact(
