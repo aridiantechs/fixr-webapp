@@ -71,7 +71,6 @@ Route::group([
         "as" => "proxy."
     ], function () {
         Route::get("/", [ProxyController::class, "index"])->name("view");
-        Route::get("/create", [ProxyController::class, "show_create_form"])->name("create.view");
         Route::post("/store", [ProxyController::class, "store"])->name("store");
         Route::get("/update/{proxy}", [ProxyController::class, "show_update_form"])->name("update.view");
         Route::post("/update/{proxy_id}", [ProxyController::class, "update"])->name("update");
