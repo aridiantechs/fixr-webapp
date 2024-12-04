@@ -4,6 +4,10 @@ $(document).ready(function () {
 
     // Function to clear input fields
     function clearFields(container) {
+        // Check if the URL contains "update"
+        if (window.location.href.includes("update")) {
+            return; // Do not clear fields if the URL contains "update"
+        }
         container.find("input, select").each(function () {
             $(this).val(""); // Clear value for inputs and selects
         });

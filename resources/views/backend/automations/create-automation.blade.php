@@ -54,7 +54,8 @@
                                         </div>
                                         <div class="form-check form-check-inline">
                                             <input class="form-check-input" type="radio" name="automation_type"
-                                                id="recurring" value="recurring" {{old('automation_type') == 'recurring' ? 'checked' : ''}}>
+                                                id="recurring" value="recurring"
+                                                {{ old('automation_type') == 'recurring' ? 'checked' : '' }}>
                                             <label class="form-check-label" for="recurring">Recurring</label>
                                         </div>
                                     </div>
@@ -145,6 +146,26 @@
                                             </div>
                                         @enderror
                                     </div>
+                                </div>
+
+                                <div class="mt-2 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="automation_status"
+                                            id="automation_status_enabled" value="enabled" checked>
+                                        <label class="form-check-label" for="automation_status_enabled">
+                                            Enabled
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="automation_status"
+                                            id="automation_status_disabled" value="disabled">
+                                        <label class="form-check-label" for="automation_status_disabled">
+                                            Disabled
+                                        </label>
+                                    </div>
+                                    @error('automation_status')
+                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="d-flex justify-content-end">

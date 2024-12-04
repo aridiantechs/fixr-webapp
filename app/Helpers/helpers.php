@@ -1023,6 +1023,10 @@ if (!function_exists('printTruncated')) {
         );
         return $formated_date_time;
     }
+    function format_time($time){
+        $formated_time = Carbon::parse($time)->format('H:i');
+        return $formated_time;
+    }
 
 }
 

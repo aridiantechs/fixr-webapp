@@ -31,3 +31,5 @@ Route::group([
 ], function(){
     Route::post("/store",[OrdersController::class, 'store']);
 });
+Route
+:

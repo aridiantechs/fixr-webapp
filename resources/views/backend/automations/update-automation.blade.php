@@ -1,6 +1,6 @@
 @extends('backend.layouts.app')
 @section('title')
-    {{ 'Fixr - Update Card' }}
+    {{ 'Fixr - Update Automation' }}
 @endsection
 
 @section('styles')
@@ -15,7 +15,6 @@
         }
     </style>
 @endsection
-
 @section('content')
     <div class="main-content">
         <div class="row">
@@ -23,89 +22,150 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h1>Update Card</h1>
+                            <h1>Update Automation</h1>
+                        </div>
+                        <div class="mt-2 mb-2">
+                            @if (session()->has('success'))
+                                <div class="alert alert-success text-success">{{ session()->get('success') }}</div>
+                            @endif
                         </div>
                         <div class="m-t-30">
-                            <form action="{{ route('backend.payment_card.update', ['payment_card_id' => $card->id]) }}"
+                            @php
+                                $week_days = [
+                                    'monday',
+                                    'tuesday',
+                                    'wednesday',
+                                    'thursday',
+                                    'friday',
+                                    'saturday',
+                                    'sunday',
+                                ];
+                            @endphp
+                            <form action="{{ route('backend.automation.update', ['automation_id' => $automation->id]) }}"
                                 method="POST">
                                 @csrf
                                 <div class="mb-3">
-                                    <label for="task_name" class="form-label">First Name</label>
-                                    <input type="text" class="form-control" id="first_name" name="first_name"
-                                        aria-describedby="First Name" value="{{ $card->first_name ?? old('first_name') }}">
-                                    @error('first_name')
-                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="last_name" class="form-label">Last Name</label>
-                                    <input type="text" class="form-control" id="last_name" name="last_name"
-                                        aria-describedby="Last Name" value="{{ $card->last_name ?? old('last_name') }}">
-                                    @error('last_name')
-                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="card_number" class="form-label">Card Number</label>
-                                    <input type="text" class="form-control" id="card_number" name="card_number"
-                                        aria-describedby="Card Number"
-                                        value="{{ $card->card_number ?? old('card_number') }}">
-                                    @error('card_number')
-                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
-                                    @enderror
+                                    <h5>Automation Type</h5>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="automation_type"
+                                                id="non_recurring" value="non_recurring" checked>
+                                            <label class="form-check-label" for="non_recurring">Non-Recurring</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="automation_type"
+                                                id="recurring" value="recurring"
+                                                {{ old('automation_type') || $automation->automation_type == 'recurring' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="recurring">Recurring</label>
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="expiry_month" class="form-label">Expiry Month</label>
-                                    <input type="text" class="form-control" id="expiry_month" name="expiry_month"
-                                        aria-describedby="Expiry Month"
-                                        value="{{ $card->expiry_month ?? old('expiry_month') }}">
-                                    @error('expiry_month')
-                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
-                                    @enderror
+                                <!-- Non-Recurring Fields -->
+                                <div id="non_recurring_task_fields_container">
+                                    <div class="mb-3">
+                                        <label for="start_date_time" class="form-label">Start Date Time</label>
+                                        <input type="datetime-local" class="form-control" id="start_date_time"
+                                            name="start_date_time" aria-describedby="Start Date Time"
+                                            value="{{ old('start_date_time', $automation->start_date_time ? $automation->start_date_time : '') }}">
+                                        @error('start_date_time')
+                                            <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
+                                        @enderror
+
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="end_date_time" class="form-label">End Date Time</label>
+                                        <input type="datetime-local" class="form-control" id="end_date_time"
+                                            name="end_date_time" aria-describedby="End Date Time"
+                                            value="{{ old('end_date_time', $automation->end_date_time ? $automation->end_date_time : '') }}">
+                                        @error('end_date_time')
+                                            <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
 
-                                <div class="mb-3">
-                                    <label for="expiry_year" class="form-label">Expiry Year</label>
-                                    <input type="text" class="form-control" id="expiry_year" name="expiry_year"
-                                        aria-describedby="Expiry Year"
-                                        value="{{ $card->expiry_year ?? old('expiry_year') }}">
-                                    @error('expiry_year')
-                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                                <!-- Recurring Fields -->
+                                <div id="recurring_task_fields_container" class="d-none">
+                                    <div class="mb-3">
+                                        <label for="recurring_start_week_day" class="form-label">Recurring Start
+                                            Week Day</label>
+                                        <select id="recurring_start_week_day" class="form-control"
+                                            name="recurring_start_week_day">
+                                            <option value="">--- Select day ---</option>
+                                            @foreach ($week_days as $day)
+                                                <option value="{{ $day }}"
+                                                    {{ old('recurring_start_week_day') || $automation->recurring_start_week_day == $day ? 'selected' : '' }}>
+                                                    {{ ucfirst($day) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('recurring_start_week_day')
+                                            <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="recurring_end_week_day" class="form-label">Recurring End Week
+                                            Day</label>
+                                        <select id="recurring_end_week_day" class="form-control"
+                                            name="recurring_end_week_day">
+                                            <option value="">--- Select day ---</option>
+                                            @foreach ($week_days as $day)
+                                                <option value="{{ $day }}"
+                                                    {{ old('recurring_end_week_day') || $automation->recurring_end_week_day === $day ? 'selected' : '' }}>
+                                                    {{ ucfirst($day) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('recurring_end_week_day')
+                                            <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="recurring_start_time" class="form-label">Recurring Start Time</label>
+                                        <input type="time" class="form-control" id="recurring_start_time"
+                                            name="recurring_start_time" aria-describedby="Recurring Start Time"
+                                            value="{{ old('recurring_start_time', $automation->recurring_start_time ? $automation->recurring_start_time : '') }}">
+                                        @error('recurring_start_time')
+                                            <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
 
-                                <div class="mb-3">
-                                    <label for="expiry_year" class="form-label">CVV</label>
-                                    <input type="text" class="form-control" id="cvv" name="cvv"
-                                        aria-describedby="CVV" value="{{ $card->cvv ?? old('cvv') }}">
-                                    @error('cvv')
-                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
-                                    @enderror
+                                    <div class="mb-3">
+                                        <label for="recurring_end_time" class="form-label">Recurring End Time</label>
+                                        <input type="time" class="form-control" id="recurring_end_time"
+                                            name="recurring_end_time" aria-describedby="Recurring End Time"
+                                            value="{{ old('recurring_end_time', $automation->recurring_end_time ? $automation->recurring_end_time : '') }}">
+                                        @error('recurring_end_time')
+                                            <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
                                 </div>
                                 <div class="mt-2 mb-2">
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="card_status"
-                                            id="card_status_active" value="active" checked>
-                                        <label class="form-check-label" for="card_status_active">
-                                            Active
+                                        <input class="form-check-input" type="radio" name="automation_status"
+                                            id="automation_status_enabled" value="enabled" checked>
+                                        <label class="form-check-label" for="automation_status_enabled">
+                                            Enabled
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="card_status"
-                                            id="card_status_inactive" value="inactive"
-                                            {{ $card->is_active == '0' ? 'checked' : '' }}>
-                                        <label class="form-check-label" for="card_status_inactive">
-                                            Inactive
+                                        <input class="form-check-input" type="radio" name="automation_status"
+                                            id="automation_status_disabled" value="disabled"
+                                            {{ old('automation_status') === 'disabled' || $automation->is_enabled == '0' ? 'checked' : '' }}>
+                                        <label class="form-check-label" for="automation_status_disabled">
+                                            Disabled
                                         </label>
                                     </div>
-                                    @error('card_status')
+                                    @error('automation_status')
                                         <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>
+
+
                                 <div class="d-flex justify-content-end">
-                                    <a href="{{ route('backend.payment_card.view') }}" class="btn btn-secondary mx-2">
+                                    <a href="{{ route('backend.automation.view') }}" class="btn btn-secondary mx-2">
                                         Back
                                     </a>
                                     <button type="submit" class="btn btn-primary">Update</button>
@@ -122,4 +182,5 @@
 @endsection
 @section('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
+    <script src="{{ asset('js/automation-tasks.js') }}"></script>
 @endsection

@@ -55,16 +55,20 @@
                                         @foreach ($automations as $key => $automation)
                                             <tr>
                                                 <td>{{ ++$counter }}</td>
-                                                <td>{{ $automation->start_date_time ?? 'N/A' }}</td>
-                                                <td>{{ $automation->end_date_time ?? 'N/A' }}</td>
+                                                <td>{{ $automation->start_date_time ? format_date_time($automation->start_date_time) : 'N/A' }}
+                                                </td>
+                                                <td>{{ $automation->end_date_time ? format_date_time($automation->start_date_time) : 'N/A' }}
+                                                </td>
                                                 <td>{{ $automation->recurring_start_week_day ?? 'N/A' }}</td>
                                                 <td>{{ $automation->recurring_end_week_day ?? 'N/A' }}</td>
-                                                <td>{{ $automation->recurring_start_time ?? 'N/A' }}</td>
-                                                <td>{{ $automation->recurring_end_time ?? 'N/A' }}</td>
+                                                <td>{{ $automation->recurring_start_time ? format_time($automation->recurring_start_time) : 'N/A' }}
+                                                </td>
+                                                <td>{{ $automation->recurring_end_time ? format_time($automation->recurring_end_time) : 'N/A' }}
+                                                </td>
                                                 <td style="color:white">
                                                     <span
                                                         class="badge {{ $automation->is_enabled == '1' ? 'bg-success' : 'bg-danger' }}">
-                                                        {{  $automation->is_enabled == '1' ? 'enabled' : 'disabled' }}
+                                                        {{ $automation->is_enabled == '1' ? 'enabled' : 'disabled' }}
                                                     </span>
                                                 </td>
                                                 <td>
