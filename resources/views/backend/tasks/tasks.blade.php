@@ -112,7 +112,7 @@
                                             <td>{{ $task->name ?? 'N/A' }}</td>
                                             <td>{{ $task->url ?? 'N/A' }}</td>
                                             <td>
-                                                @if ($task->keywords && json_decode($task->keywords))
+                                                @if ($task->keywords)
                                                     @foreach (json_decode($task->keywords, true) as $keyword)
                                                         <span class="badge bg-info">{{ $keyword }}</span>
                                                     @endforeach
