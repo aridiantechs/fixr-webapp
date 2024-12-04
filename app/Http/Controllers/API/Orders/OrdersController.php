@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\API\Orders;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\AutomationResource;
+use App\Models\Automation;
 use App\Models\PaymentCard;
+use App\Models\Proxy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Order;
@@ -47,27 +50,27 @@ class OrdersController extends Controller
             return api_response((Object) [], 200, "Order created successfully");
         return api_response((Object) [], 400, "Something went wrong...");
     }
-    public function get_task_data(Request $request)
+    public function get_card_proxy_data(Request $request)
     {
-        $file_path = public_path('JSON/random-names.json');
-        if (!file_exists($file_path)) {
-            return api_response((Object) [], 400, 'File does not exist');
-        }
-        $json_content = file_get_contents($file_path);
-        $namesArray = json_decode($json_content, true);
-
-        if (empty($namesArray)) {
-            return api_response((Object) [], 400, 'File is empty');
-        }
-        $random_name = $namesArray[array_rand($namesArray)];
         $payment_card = PaymentCard::where('is_active', '1')->inRandomOrder()->first();
+        $proxy = Proxy::all()->random();
         if (empty($payment_card)) {
             return api_response((Object) [], 400, 'No payment card found');
         }
+        if (empty($proxy)) {
+            return api_response((Object) [], 400, 'No proxy found');
+        }
         $data = [
-            'random_name' => $random_name,
+            'proxy' => $proxy,
             'payment_card' => $payment_card
         ];
         return api_response((Object) $data, 200);
+    }
+    public function get_automation_data(){
+        $automation = Automation::first();
+        if(!$automation){
+            return api_response((Object) [], 400,'No automation found');
+        }
+        return api_response((Object) new AutomationResource($automation), 200);
     }
 }

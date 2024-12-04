@@ -65,55 +65,18 @@ class AutomationController extends Controller
     ];
     public function index(Request $request)
     {
-        $automations = Automation::orderBy("created_at", "desc")->paginate(10);
-        return view("backend.automations.automations", compact("automations"));
-    }
-    public function show_create_form(Request $request)
-    {
-        return view("backend.automations.create-automation");
+        $automation = Automation::first();
+        return view("backend.automations.automations", compact("automation"));
     }
     public function store(Request $request)
     {
         $validated_data = $request->validate($this->rules, $this->messages);
 
         $automation = new Automation();
-        $automation->automation_type = trim($validated_data['automation_type']);
-
-        if ($validated_data['automation_type'] === 'non_recurring') {
-            $automation->start_date_time = $validated_data['start_date_time'];
-            $automation->end_date_time = $validated_data['end_date_time'];
-        } else {
-            $automation->recurring_start_week_day = $validated_data['recurring_start_week_day'];
-            $automation->recurring_end_week_day = $validated_data['recurring_end_week_day'];
-            $automation->recurring_start_time = $validated_data['recurring_start_time'];
-            $automation->recurring_end_time = $validated_data['recurring_end_time'];
+        $old_automation = Automation::first();
+        if ($old_automation) {
+            $automation = $old_automation;
         }
-        $automation->is_enabled = $validated_data['automation_status'] === 'enabled' ? '1' : '0';
-
-        $saved = $automation->save();
-        if ($saved) {
-            return back()->with('success', 'Automation successfully added');
-        } else {
-            return back()->with('error', 'Something went wrong...');
-        }
-
-
-    }
-    public function show_update_form(Automation $automation, Request $request)
-    {
-        if (!$automation)
-            abort(404);
-        return view('backend.automations.update-automation', ['automation' => $automation]);
-    }
-    public function update(Request $request)
-    {
-        $validated_data = $request->validate($this->rules, $this->messages);
-
-        $automation = Automation::find($request->automation_id);
-        if (!$automation) {
-            return redirect()->route('backend.automation.view')->with('error', 'Automation not found');
-        }
-
         $automation->automation_type = trim($validated_data['automation_type']);
 
         if ($validated_data['automation_type'] === 'non_recurring') {
@@ -136,33 +99,15 @@ class AutomationController extends Controller
             $automation->start_date_time = null;
             $automation->end_date_time = null;
         }
-
         $automation->is_enabled = $validated_data['automation_status'] === 'enabled' ? '1' : '0';
 
-        $updated = $automation->save();
-
-        if ($updated) {
-            return redirect()->route('backend.automation.view')->with('success', 'Automation successfully updated');
+        $saved = $automation->save();
+        if ($saved) {
+            return back()->with('success', 'Automation successfully added');
         } else {
-            return redirect()->route('backend.automation.view')->with('error', 'Something went wrong...');
-        }
-    }
-    public function delete(Request $request)
-    {
-        $automation = Automation::find($request->automation_id);
-        if (!$automation) {
-            return redirect()->route('backend.automation.view')->with('error', 'Automation not found');
-        }
-        $deleted = $automation->delete();
-        if ($deleted) {
-            $key = 'success';
-            $message = 'Automation successfully deleted';
-        } else {
-            $key = 'error';
-            $message = 'Something went wrong';
+            return back()->with('error', 'Something went wrong...');
         }
 
-        return redirect()->route("backend.automation.view")->with($key, $message);
 
     }
 }

@@ -15,7 +15,11 @@
         }
     </style>
 @endsection
-
+{{-- @php
+    echo '<pre>';
+    print_r($automation->toArray());
+    die;
+@endphp --}}
 @section('content')
     <div class="main-content">
         <div class="row">
@@ -23,11 +27,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h1>Automations</h1>
-                            <div>
-                                <a href="{{ route('backend.automation.create.view') }}" class="btn btn-primary"><i
-                                        class="fas fa-plus mx-1"></i>Add Automation</a>
-                            </div>
+                            <h1>Automation</h1>
                         </div>
                         <div class="mt-2 mb-2">
                             @if (session()->has('success'))
@@ -35,11 +35,157 @@
                             @endif
                         </div>
                         <div class="m-t-30">
+                            @php
+                                $week_days = [
+                                    'monday',
+                                    'tuesday',
+                                    'wednesday',
+                                    'thursday',
+                                    'friday',
+                                    'saturday',
+                                    'sunday',
+                                ];
+                            @endphp
+                            <form action="{{ route('backend.automation.store') }}" method="POST">
+                                @csrf
+                                <div class="mb-3">
+                                    <h5>Automation Type</h5>
+                                    <div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="automation_type"
+                                                id="non_recurring" value="non_recurring" checked>
+                                            <label class="form-check-label" for="non_recurring">Non-Recurring</label>
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="automation_type"
+                                                id="recurring" value="recurring"
+                                                {{ old('automation_type') == 'recurring' ? 'checked' : '' }}>
+                                            <label class="form-check-label" for="recurring">Recurring</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Non-Recurring Fields -->
+                                <div id="non_recurring_task_fields_container">
+                                    <div class="mb-3">
+                                        <label for="start_date_time" class="form-label">Start Date Time</label>
+                                        <input type="datetime-local" class="form-control" id="start_date_time"
+                                            name="start_date_time" aria-describedby="Start Date Time"
+                                            value="{{ old('start_date_time') }}">
+                                        @error('start_date_time')
+                                            <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
+                                        @enderror
+
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="end_date_time" class="form-label">End Date Time</label>
+                                        <input type="datetime-local" class="form-control" id="end_date_time"
+                                            name="end_date_time" aria-describedby="End Date Time"
+                                            value="{{ old('end_date_time') }}">
+                                        @error('end_date_time')
+                                            <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <!-- Recurring Fields -->
+                                <div id="recurring_task_fields_container" class="d-none">
+                                    <div class="mb-3">
+                                        <label for="recurring_start_week_day" class="form-label">Recurring Start
+                                            Week Day</label>
+                                        <select id="recurring_start_week_day" class="form-control"
+                                            name="recurring_start_week_day">
+                                            <option value="">--- Select day ---</option>
+                                            @foreach ($week_days as $day)
+                                                <option value="{{ $day }}"
+                                                    {{ old('recurring_start_week_day') == $day ? 'selected' : '' }}>
+                                                    {{ ucfirst($day) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('recurring_start_week_day')
+                                            <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="recurring_end_week_day" class="form-label">Recurring End Week
+                                            Day</label>
+                                        <select id="recurring_end_week_day" class="form-control"
+                                            name="recurring_end_week_day">
+                                            <option value="">--- Select day ---</option>
+                                            @foreach ($week_days as $day)
+                                                <option value="{{ $day }}"
+                                                    {{ old('recurring_end_week_day') === $day ? 'selected' : '' }}>
+                                                    {{ ucfirst($day) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('recurring_end_week_day')
+                                            <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}
+                                            </div>
+                                        @enderror
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="recurring_start_time" class="form-label">Recurring Start Time</label>
+                                        <input type="time" class="form-control" id="recurring_start_time"
+                                            name="recurring_start_time" aria-describedby="Recurring Start Time"
+                                            value="{{ old('recurring_start_time') }}">
+                                        @error('recurring_start_time')
+                                            <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="recurring_end_time" class="form-label">Recurring End Time</label>
+                                        <input type="time" class="form-control" id="recurring_end_time"
+                                            name="recurring_end_time" aria-describedby="Recurring End Time"
+                                            value="{{ old('recurring_end_time') }}">
+                                        @error('recurring_end_time')
+                                            <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="mt-2 mb-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="automation_status"
+                                            id="automation_status_enabled" value="enabled" checked>
+                                        <label class="form-check-label" for="automation_status_enabled">
+                                            Enabled
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="automation_status"
+                                            id="automation_status_disabled" value="disabled"
+                                            {{ old('automation_status') === 'disabled'}}>
+                                        <label class="form-check-label" for="automation_status_disabled">
+                                            Disabled
+                                        </label>
+                                    </div>
+                                    @error('automation_status')
+                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+
+
+                                <div class="d-flex justify-content-end">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            </form>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="m-t-30">
                             <div class="table-responsive" id="live_tracking_table">
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>#</th>
                                             <th>Start Date</th>
                                             <th>End Date</th>
                                             <th>Recurring Start Day</th>
@@ -47,54 +193,38 @@
                                             <th>Recurring Start Time</th>
                                             <th>Recurring End Time</th>
                                             <th>Status</th>
-                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @php $counter = 0; @endphp
-                                        @foreach ($automations as $key => $automation)
-                                            <tr>
-                                                <td>{{ ++$counter }}</td>
-                                                <td>{{ $automation->start_date_time ? format_date_time($automation->start_date_time) : 'N/A' }}
-                                                </td>
-                                                <td>{{ $automation->end_date_time ? format_date_time($automation->start_date_time) : 'N/A' }}
-                                                </td>
-                                                <td>{{ $automation->recurring_start_week_day ?? 'N/A' }}</td>
-                                                <td>{{ $automation->recurring_end_week_day ?? 'N/A' }}</td>
-                                                <td>{{ $automation->recurring_start_time ? format_time($automation->recurring_start_time) : 'N/A' }}
-                                                </td>
-                                                <td>{{ $automation->recurring_end_time ? format_time($automation->recurring_end_time) : 'N/A' }}
-                                                </td>
-                                                <td style="color:white">
-                                                    <span
-                                                        class="badge {{ $automation->is_enabled == '1' ? 'bg-success' : 'bg-danger' }}">
-                                                        {{ $automation->is_enabled == '1' ? 'enabled' : 'disabled' }}
-                                                    </span>
-                                                </td>
-                                                <td>
-                                                    <a
-                                                        href="{{ route('backend.automation.update.view', ['automation' => $automation]) }}">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    <a class="mx-3"
-                                                        href="{{ route('backend.automation.delete', ['automation_id' => $automation->id]) }}">
-                                                        <i class="fas fa-trash-alt"></i>
-                                                    </a>
-
-                                                </td>
-                                            </tr>
-                                        @endforeach
+                                        <tr>
+                                            <td>{{ isset($automation->start_date_time) ? format_date_time($automation->start_date_time) : 'N/A' }}
+                                            </td>
+                                            <td>{{ isset($automation->end_date_time) ? format_date_time($automation->end_date_time) : 'N/A' }}
+                                            </td>
+                                            <td>{{ $automation->recurring_start_week_day ?? 'N/A' }}</td>
+                                            <td>{{ $automation->recurring_end_week_day ?? 'N/A' }}</td>
+                                            <td>{{ isset($automation->recurring_start_time) ? format_time($automation->recurring_start_time) : 'N/A' }}
+                                            </td>
+                                            <td>{{ isset($automation->recurring_end_time) ? format_time($automation->recurring_end_time) : 'N/A' }}
+                                            </td>
+                                            <td style="color:white">
+                                                <span
+                                                    class="badge
+                                                    {{ isset($automation->is_enabled)
+                                                        ? ($automation->is_enabled == '1'
+                                                            ? 'bg-success'
+                                                            : 'bg-danger')
+                                                        : 'bg-secondary' }}">
+                                                    {{ isset($automation->is_enabled) ? ($automation->is_enabled == '1' ? 'enabled' : 'disabled') : 'N/A' }}
+                                                </span>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
 
                             </div>
                         </div>
-                        <div class="horizontal-rule">
-                            <hr>
-                        </div>
-                        <div class="d-flex justify-content-start align-items-center">
-                            {{ $automations->links() }}
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -103,5 +233,5 @@
 @endsection
 @section('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
-    <script></script>
+    <script src="{{ asset('js/automation-tasks.js') }}"></script>
 @endsection

@@ -20,15 +20,20 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 Route::group([
-    "prefix"=> "auth"
+    "prefix" => "auth"
 ], function () {
     Route::post("/login", [AuthController::class, "login"]);
     Route::post("/register", [AuthController::class, "register"]);
 });
 Route::group([
-    "prefix"=> "orders", // the url will be of the form -> fixr.com/api/orders/{route}
-    "middleware" => ["api","auth:sanctum"]
-], function(){
-    Route::post("/store",[OrdersController::class, 'store']);
+    "prefix" => "orders", // the url will be of the form -> fixr.com/api/orders/{route}
+    "middleware" => ["api", "auth:sanctum"]
+], function () {
+    Route::post("/store", [OrdersController::class, 'store']);
 });
-Route::get("task-data", [OrdersController::class,"get_task_data"]);
+Route::group([
+    'middleware' => ['api', 'auth:sanctum']
+], function () {
+    Route::get('/card-proxy-data', [OrdersController::class, "get_card_proxy_data"]);
+    Route::get('/automation-data', [OrdersController::class,'get_automation_data']);
+});

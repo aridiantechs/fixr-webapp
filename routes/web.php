@@ -83,11 +83,7 @@ Route::group([
         "as" => "automation."
     ], function () {
         Route::get("/", [AutomationController::class, "index"])->name("view");
-        Route::get("/create", [AutomationController::class, "show_create_form"])->name("create.view");
         Route::post("/store", [AutomationController::class, "store"])->name("store");
-        Route::get("/update/{automation}", [AutomationController::class, "show_update_form"])->name("update.view");
-        Route::post("/update/{automation_id}", [AutomationController::class, "update"])->name("update");
-        Route::get("/delete/{automation_id}", [AutomationController::class, "delete"])->name("delete");
     });
 
     //payment cards routes
