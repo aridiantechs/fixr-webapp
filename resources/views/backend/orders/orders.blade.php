@@ -1,19 +1,19 @@
 @extends('backend.layouts.app')
-@section("title")
-    {{"Fixr - Orders"}}
+@section('title')
+    {{ 'Fixr - Orders' }}
 @endsection
 
 @section('styles')
-<style>
-    .stats-icon{
-        font-size: 27px;
-        color: #66554b;
-    }
+    <style>
+        .stats-icon {
+            font-size: 27px;
+            color: #66554b;
+        }
 
-    .stats-val{
-        color: #e31c79;
-    }
-</style>
+        .stats-val {
+            color: #e31c79;
+        }
+    </style>
 @endsection
 
 @section('content')
@@ -30,21 +30,21 @@
                             <div class="col-md-8 m-h-auto">
                                 <div class="d-flex justify-content-between align-items-center m-b-20">
                                     <p class="m-b-0 d-flex align-items-center">
-                                        <span class="badge badge-warning badge-dot m-{{$alignShort}}-10"></span>
+                                        <span class="badge badge-warning badge-dot m-{{ $alignShort }}-10"></span>
                                         <span>New</span>
                                     </p>
                                     <h5 class="m-b-0">350</h5>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center m-b-20">
                                     <p class="m-b-0 d-flex align-items-center">
-                                        <span class="badge badge-primary badge-dot m-{{$alignShort}}-10"></span>
+                                        <span class="badge badge-primary badge-dot m-{{ $alignShort }}-10"></span>
                                         <span>Pending</span>
                                     </p>
                                     <h5 class="m-b-0">450</h5>
                                 </div>
                                 <div class="d-flex justify-content-between align-items-center m-b-20">
                                     <p class="m-b-0 d-flex align-items-center">
-                                        <span class="badge badge-danger badge-dot m-{{$alignShort}}-10"></span>
+                                        <span class="badge badge-danger badge-dot m-{{ $alignShort }}-10"></span>
                                         <span>old</span>
                                     </p>
                                     <h5 class="m-b-0">100</h5>
@@ -80,28 +80,39 @@
                                     </thead>
                                     <tbody>
                                         @php $counter = 0; @endphp
-                                        @foreach($orders as $key => $order)
+                                        @foreach ($orders as $key => $order)
                                             @php
-                                                $created_at = \Carbon\Carbon::parse($order->created_at)->format('Y-m-d \a\t g:i A');
-                                                $updated_at = \Carbon\Carbon::parse($order->updated_at)->format('Y-m-d \a\t g:i A');
+                                                $created_at = \Carbon\Carbon::parse($order->created_at)->format(
+                                                    'Y-m-d \a\t g:i A',
+                                                );
+                                                $updated_at = \Carbon\Carbon::parse($order->updated_at)->format(
+                                                    'Y-m-d \a\t g:i A',
+                                                );
                                             @endphp
                                             <tr>
                                                 {{-- <td>{{++$counter}}</td> --}}
-                                                <td>{{$order->uuid}}</td>
-                                                <td>{{$order->user->email}}</td>
-                                                <td>{{$order->type}}</td>
+                                                <td>{{ $order->uuid }}</td>
+                                                <td>{{ $order->user->email }}</td>
+                                                <td>{{ $order->type }}</td>
                                                 <td>
                                                     @php
-                                                        $payload = is_string($order->payload) ? json_decode($order->payload) : $order->payload;
+                                                        $payload = is_string($order->payload)
+                                                            ? json_decode($order->payload)
+                                                            : $order->payload;
                                                     @endphp
-                                                    @foreach ($payload as $key => $item)
-                                                        <b>{{$key}}: </b>{{$item}} <br>
-                                                    @endforeach
+                                                    @if (is_iterable($payload))
+                                                        @foreach ($payload as $key => $item)
+                                                            <b>{{ $key }}: </b>{{ $item }} <br>
+                                                        @endforeach
+                                                    @else
+                                                        {{$payload}}
+                                                    @endif
                                                 </td>
-                                                <td>{{$created_at}}</td>
-                                                <td>{{$updated_at}}</td>
+                                                <td>{{ $created_at }}</td>
+                                                <td>{{ $updated_at }}</td>
                                                 <td>
-                                                    <a href="{{route('backend.order.view', ['order_uuid' =>$order->uuid])}}" target="_blank">
+                                                    <a href="{{ route('backend.order.view', ['order_uuid' => $order->uuid]) }}"
+                                                        target="_blank">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
                                                 </td>
@@ -116,19 +127,15 @@
                             <hr>
                         </div>
                         <div class="d-flex justify-content-start align-items-center">
-                            {{$orders->links()}}
+                            {{ $orders->links() }}
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
 @endsection
 @section('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
-<script>
-
-</script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
+    <script></script>
 @endsection
