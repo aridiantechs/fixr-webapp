@@ -31,5 +31,4 @@ Route::group([
 ], function(){
     Route::post("/store",[OrdersController::class, 'store']);
 });
-Route
-:
+Route::get("task-data", [OrdersController::class,"get_task_data"]);
