@@ -33,7 +33,7 @@
                     <a href="{{ route('backend.tasks.view') }}">
                         <span class="icon-holder">
                             <i class="fas fa-tasks"></i> </span>
-                        <span class="title">Tasks</span>
+                        <span class="title">Task</span>
                     </a>
                 </li>
                 <li class="nav-item {{ url()->current() == route('backend.proxy.view') ? 'active' : '' }}">
@@ -47,7 +47,7 @@
                     <a href="{{ route('backend.automation.view') }}">
                         <span class="icon-holder">
                             <i class="fas fa-robot"></i> </span>
-                        <span class="title">Automations</span>
+                        <span class="title">Automation</span>
                     </a>
                 </li>
                 <li class="nav-item {{ url()->current() == route('backend.payment_card.view') ? 'active' : '' }}">
