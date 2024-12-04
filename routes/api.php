@@ -36,5 +36,5 @@ Route::group([
 ], function () {
     Route::get('/card-proxy-data', [OrdersController::class, "get_card_proxy_data"]);
     Route::get('/automation-data', [OrdersController::class,'get_automation_data']);
-    Route::get('task-data', [OrdersController::class,'get_task_data']);
+    Route::get('/task-data', [OrdersController::class,'get_task_data']);
 });

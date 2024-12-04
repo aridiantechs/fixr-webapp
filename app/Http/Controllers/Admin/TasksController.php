@@ -17,26 +17,31 @@ class TasksController extends Controller
     }
     public function store(Request $request)
     {
-        $this->validate($request, [
-            "task_name" => "required",
-            "task_type" => [
-                "required",
-                Rule::in(['event', 'organizer'])
-            ],
-            "task_url" => "required|url",
+        $validated_data = $request->validate([
+            'task_name' => 'required|string|max:255',
+            'task_type' => 'required|in:event,organizer',
+            'task_url' => 'nullable|url',
+            'keywords' => 'nullable|string'
         ]);
-        $task = new Task();
-        $old_task = Task::first();
-        if ($old_task) {
-            $task = $old_task;
+
+        $input_keywords_array = json_decode($validated_data['keywords'], true);
+        $clean_keywords = [];
+        if (json_last_error() === JSON_ERROR_NONE) {
+            foreach ($input_keywords_array as $keyword) {
+                $clean_keywords[] = $keyword['value'];
+            }
         }
-        $task->name = $request->task_name;
-        $task->type = $request->task_type;
-        $task->url = $request->task_url;
+        $task = Task::firstOrNew();
+
+        $task->name = $validated_data['task_name'];
+        $task->type = $validated_data['task_type'];
+        $task->url = $validated_data['task_url'];
+        $task->keywords = json_encode(array_unique($clean_keywords));
+
         $task->save();
 
-        if ($task)
-            return back()->with("success", "Task successfully created");
-        return back()->with("error", "Error creating the new task")->withInput(request()->all());
+        return redirect()
+            ->back()
+            ->with('success', 'Task saved successfully!');
     }
 }
