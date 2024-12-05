@@ -104,8 +104,6 @@
                                                         @foreach ($payload as $key => $item)
                                                             <b>{{ $key }}: </b>{{ $item }} <br>
                                                         @endforeach
-                                                    @else
-                                                        {{$payload}}
                                                     @endif
                                                 </td>
                                                 <td>{{ $created_at }}</td>
