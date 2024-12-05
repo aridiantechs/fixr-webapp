@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Automation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class AutomationController extends Controller
 {
@@ -48,7 +49,6 @@ class AutomationController extends Controller
             'nullable',
             'required_if:automation_type,recurring',
             'exclude_if:automation_type,non_recurring',
-            'after:recurring_start_time',
         ],
         'automation_status' => [
             'required',
@@ -70,8 +70,38 @@ class AutomationController extends Controller
     }
     public function store(Request $request)
     {
-        $validated_data = $request->validate($this->rules, $this->messages);
+        $validator = Validator::make($request->all(), $this->rules);
 
+        $validator->after(function ($validator) use ($request) {
+            if ($request->automation_type === 'recurring') {
+                // Check if start and end weekdays are the same
+                if (
+                    $request->recurring_start_week_day === $request->recurring_end_week_day &&
+                    $request->recurring_start_time === $request->recurring_end_time
+                ) {
+                    $validator->errors()->add(
+                        'recurring_end_time',
+                        'The recurring end time must be different from the recurring start time when weekdays are the same.'
+                    );
+                }
+
+                // Check if end time is greater than start time
+                if (
+                    $request->recurring_start_week_day === $request->recurring_end_week_day &&
+                    $request->recurring_start_time >= $request->recurring_end_time
+                ) {
+                    $validator->errors()->add(
+                        'recurring_end_time',
+                        'The recurring end time must be greater than the recurring start time when the weekdays are the same.'
+                    );
+                }
+            }
+        });
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+        $validated_data = $validator->validated();
         $automation = new Automation();
         $old_automation = Automation::first();
         if ($old_automation) {
