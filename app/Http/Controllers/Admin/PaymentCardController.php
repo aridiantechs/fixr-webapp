@@ -24,14 +24,32 @@ class PaymentCardController extends Controller
             'first_name' => 'required|string|max:50|regex:/^[a-zA-Z]+$/',
             'last_name' => 'required|string|max:50|regex:/^[a-zA-Z]+$/',
             'card_number' => 'required|digits_between:13,19|regex:/^\d+$/',
-            'expiry_month' => 'required|integer|between:1,12',
+            'expiry_month' => [
+                'required',
+                'integer',
+                'between:1,12',
+                function ($attribute, $value, $fail) use ($request) {
+                    $currentYear = date('Y');
+                    $currentMonth = date('m');
+
+                    if (
+                        $request->expiry_year == $currentYear &&
+                        $value < $currentMonth
+                    ) {
+                        $fail('The expiry month must not be in the past.');
+                    }
+                },
+            ],
             'expiry_year' => 'required|integer|min:' . date('Y') . '|max:' . (date('Y') + 10),
             'cvv' => 'required|digits:3',
             'card_status' => [
                 'required',
-                Rule::in(['active', 'inactive'])
+                Rule::in(['active', 'inactive']),
             ],
+        ], [
+            'expiry_month'=> 'expiry month',
         ]);
+
 
         $payment_card = new PaymentCard();
         $payment_card->first_name = strtolower(trim($request->first_name));
