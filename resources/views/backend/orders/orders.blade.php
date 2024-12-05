@@ -100,7 +100,7 @@
                                                             ? json_decode($order->payload)
                                                             : $order->payload;
                                                     @endphp
-                                                    @if (is_iterable($payload))
+                                                    @if (is_iterable((array)$payload))
                                                         @foreach ($payload as $key => $item)
                                                             <b>{{ $key }}: </b>{{ $item }} <br>
                                                         @endforeach
