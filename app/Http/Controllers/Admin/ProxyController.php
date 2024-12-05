@@ -12,7 +12,7 @@ class ProxyController extends Controller
 {
     public function index(Request $request)
     {
-        $proxies = Proxy::orderBy("created_at", "desc")->paginate(5);
+        $proxies = Proxy::orderBy("created_at", "desc")->paginate(10);
         return view("backend.proxies.proxies", ["proxies" => $proxies]);
     }
     public function store(Request $request)

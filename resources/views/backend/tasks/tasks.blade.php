@@ -88,12 +88,12 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>type</th>
-                                            <th>name</th>
-                                            <th>url</th>
+                                            <th>Type</th>
+                                            <th>Name</th>
+                                            <th>URL</th>
                                             <th>Keywords</th>
-                                            <th>created at</th>
-                                            <th>updated at</th>
+                                            <th>Created at</th>
+                                            <th>Updated at</th>
                                         </tr>
                                     </thead>
                                     <tbody>
