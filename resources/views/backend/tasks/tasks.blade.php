@@ -32,7 +32,7 @@
                                 <div class="mb-3">
                                     <label for="task_name" class="form-label">Name</label>
                                     <input type="text" class="form-control" id="task_name" name="task_name"
-                                        aria-describedby="Task Name" value="{{ old('task_name') ?? $task->name }}">
+                                        aria-describedby="Task Name" value="{{ old('task_name') ?? $task->name ?? '' }}">
                                     @error('task_name')
                                         <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
                                     @enderror
@@ -44,7 +44,7 @@
                                         name="task_type">
                                         <option value="event" selected>Event</option>
                                         <option value="organizer"
-                                            {{ old('task_type') || $task->type === 'organizer' ? 'selected' : '' }}>
+                                            {{ old('task_type') || (isset($task) && $task->type === 'organizer') ? 'selected' : '' }}>
                                             Organizer</option>
                                     </select>
                                     @error('task_type')
@@ -55,7 +55,7 @@
                                 <div class="mb-3">
                                     <label for="task_url" class="form-label">Task URL</label>
                                     <input type="text" class="form-control" id="task_url" name="task_url"
-                                        aria-describedby="Task URL" value="{{ old('task_url') ?? $task->url }}">
+                                        aria-describedby="Task URL" value="{{ old('task_url') ?? $task->url ?? '' }}">
                                     @error('task_url')
                                         <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
                                     @enderror
@@ -64,7 +64,7 @@
                                     <label for="task_keywords" class="form-label">Keywords</label>
                                     <input type="text" class="form-control" id="task_keywords" name="keywords"
                                         aria-describedby="Task Keywords"
-                                        value="{{ old('keywords') ?? json_encode($task->keywords ? json_decode($task->keywords) : []) }}">
+                                        value="{{ old('keywords') ?? (isset($task) ? json_decode($task->keywords) : []) }}">
 
                                     <small class="text-muted">Press enter after adding a keyword</small>
                                     @error('keywords')
