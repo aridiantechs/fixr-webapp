@@ -64,7 +64,7 @@
                                     <label for="task_keywords" class="form-label">Keywords</label>
                                     <input type="text" class="form-control" id="task_keywords" name="keywords"
                                         aria-describedby="Task Keywords"
-                                        value="{{ old('keywords') ?? (isset($task) ? json_decode($task->keywords) : []) }}">
+                                        value="{{ old('keywords') ?? (isset($task->keywords) ? $task->keywords : '') }}">
 
                                     <small class="text-muted">Press enter after adding a keyword</small>
                                     @error('keywords')
@@ -97,31 +97,37 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @php
-                                            $created_at = isset($task->created_at)
-                                                ? format_date_time($task->created_at)
-                                                : 'N/A';
-                                            $updated_at = isset($task->updated_at)
-                                                ? format_date_time($task->updated_at)
-                                                : 'N/A';
-                                        @endphp
-                                        <tr>
-                                            <td>{{ $task->type ?? 'N/A' }}</td>
-                                            <td>{{ $task->name ?? 'N/A' }}</td>
-                                            <td>{{ $task->url ?? 'N/A' }}</td>
-                                            <td>
-                                                @if ($task->keywords)
-                                                    @foreach (json_decode($task->keywords, true) as $keyword)
-                                                        <span class="badge bg-info">{{ $keyword }}</span>
-                                                    @endforeach
-                                                @else
-                                                    N/A
-                                                @endif
-                                            </td>
-                                            <td>{{ $created_at }}</td>
-                                            <td>{{ $updated_at }}</td>
+                                        @if ($task)
+                                            @php
+                                                $created_at = isset($task->created_at)
+                                                    ? format_date_time($task->created_at)
+                                                    : 'N/A';
+                                                $updated_at = isset($task->updated_at)
+                                                    ? format_date_time($task->updated_at)
+                                                    : 'N/A';
+                                            @endphp
+                                            <tr>
+                                                <td>{{ $task->type ?? 'N/A' }}</td>
+                                                <td>{{ $task->name ?? 'N/A' }}</td>
+                                                <td>{{ $task->url ?? 'N/A' }}</td>
+                                                <td>
+                                                    @if ($task->keywords)
+                                                        @foreach (json_decode($task->keywords, true) as $keyword)
+                                                            <span class="badge bg-info">{{ $keyword }}</span>
+                                                        @endforeach
+                                                    @else
+                                                        N/A
+                                                    @endif
+                                                </td>
+                                                <td>{{ $created_at }}</td>
+                                                <td>{{ $updated_at }}</td>
 
-                                        </tr>
+                                            </tr>
+                                        @else
+                                            <tr>
+                                                <td colspan="5">No task created.</td>
+                                            </tr>
+                                        @endif
                                     </tbody>
                                 </table>
 
