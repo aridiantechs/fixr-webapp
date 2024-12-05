@@ -20,7 +20,7 @@ class TasksController extends Controller
         $validated_data = $request->validate([
             'task_name' => 'required|string|max:255',
             'task_type' => 'required|in:event,organizer',
-            'task_url' => 'nullable|url',
+            'task_url' => 'required|url',
             'keywords' => 'nullable|string'
         ]);
 

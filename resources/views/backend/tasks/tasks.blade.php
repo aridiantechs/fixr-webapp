@@ -63,8 +63,10 @@
                                 <div class="mb-3">
                                     <label for="task_keywords" class="form-label">Keywords</label>
                                     <input type="text" class="form-control" id="task_keywords" name="keywords"
-                                        aria-describedby="Task Keywords">
-                                    <small class="text-muted">Press enter after adding a keyword! Max allowed : 20</small>
+                                        aria-describedby="Task Keywords"
+                                        value="{{ old('keywords') ?? json_encode($task->keywords ? json_decode($task->keywords) : []) }}">
+
+                                    <small class="text-muted">Press enter after adding a keyword</small>
                                     @error('keywords')
                                         <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
                                     @enderror
@@ -135,12 +137,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
     <script>
-        // Initialize Tagify on the keywords input
-        const input = document.querySelector('#task_keywords');
-        const tagify = new Tagify(input, {
-            whitelist: [], // Optional: preload some keywords
-            maxTags: 20, // Optional: limit the number of tags
-            placeholder: "Add keywords...",
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.querySelector('#task_keywords');
+
+            // Initialize Tagify
+            const tagify = new Tagify(input, {
+                whitelist: [], // Optional: preload some keywords
+                maxTags: 20, // Limit the number of tags
+                placeholder: "Add keywords...",
+            });
         });
     </script>
 @endsection
