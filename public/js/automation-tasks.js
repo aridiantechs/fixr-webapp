@@ -19,11 +19,11 @@ $(document).ready(function () {
         if (selectedType === "non_recurring") {
             nonRecurringFields.removeClass("d-none");
             recurringFields.addClass("d-none");
-            clearFields(recurringFields); // Clear recurring fields
+            //clearFields(recurringFields); // Clear recurring fields
         } else if (selectedType === "recurring") {
             recurringFields.removeClass("d-none");
             nonRecurringFields.addClass("d-none");
-            clearFields(nonRecurringFields); // Clear non-recurring fields
+            //clearFields(nonRecurringFields); // Clear non-recurring fields
         }
     }
 

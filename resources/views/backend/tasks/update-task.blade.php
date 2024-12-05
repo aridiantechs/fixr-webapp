@@ -42,7 +42,8 @@
                                     <select id="task_type" class="form-control" aria-label="Select Task Type"
                                         name="task_type">
                                         <option value="event" selected>Event</option>
-                                        <option value="organizer" {{ old('task_type') || $task->type === 'organizer' ? 'selected' : '' }}>
+                                        <option value="organizer"
+                                            {{ old('task_type') || $task->type === 'organizer' ? 'selected' : '' }}>
                                             Organizer</option>
                                     </select>
                                     @error('task_type')
@@ -55,6 +56,15 @@
                                     <input type="text" class="form-control" id="task_url" name="task_url"
                                         aria-describedby="Task URL" value="{{ old('task_url') ?? $task->url }}">
                                     @error('task_url')
+                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div class="mb-3">
+                                    <label for="task_keywords" class="form-label">Keywords</label>
+                                    <input type="text" class="form-control" id="task_keywords" name="keywords"
+                                        aria-describedby="Task Keywords">
+                                    <small class="text-muted">Press enter after adding a keyword! Max allowed : 20</small>
+                                    @error('keywords')
                                         <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
                                     @enderror
                                 </div>

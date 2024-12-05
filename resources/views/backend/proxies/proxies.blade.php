@@ -59,7 +59,7 @@
                                             <th>#</th>
                                             <th>content</th>
                                             <th>created at</th>
-                                            <th>updated at</th>
+                                            {{-- <th>updated at</th> --}}
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -72,7 +72,7 @@
                                             <tr>
                                                 <td>{{ ++$counter }}</td>
                                                 <td>{{ $proxy->content }}</td>
-                                                <td>{{ $created_at }}</td>
+                                                {{-- <td>{{ $created_at }}</td> --}}
                                                 <td>{{ $updated_at }}</td>
                                                 <td>
                                                     <a href="{{ route('backend.proxy.update.view', ['proxy' => $proxy]) }}">
