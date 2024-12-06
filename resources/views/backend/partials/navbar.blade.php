@@ -1,6 +1,6 @@
 <div class="header">
     <div class="logo logo-dark">
-        <a href="index.html" style="margin: 0;
+        <a href="{{route('/')}}" style="margin: 0;
         position: absolute;
         top: 50%;
         -ms-transform: translateY(-50%);
@@ -81,7 +81,7 @@
                             <i class="anticon font-size-10 anticon-{{$alignreverse}}"></i>
                         </div>
                     </a>
-                    
+
                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                         @csrf
                       </form>
