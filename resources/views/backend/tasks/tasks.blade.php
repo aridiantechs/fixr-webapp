@@ -26,13 +26,19 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <h1>Task</h1>
                         </div>
+                        <div class="mt-2 mb-2">
+                            @if (session()->has('success'))
+                                <div class="alert alert-success text-success">{{ session()->get('success') }}
+                                </div>
+                            @endif
+                        </div>
                         <div class="m-t-30">
                             <form action="{{ route('backend.tasks.store') }}" method="POST">
                                 @csrf
                                 <div class="mb-3">
                                     <label for="task_name" class="form-label">Name</label>
                                     <input type="text" class="form-control" id="task_name" name="task_name"
-                                        aria-describedby="Task Name" value="{{ old('task_name') ?? $task->name ?? '' }}">
+                                        aria-describedby="Task Name" value="{{ old('task_name') ?? ($task->name ?? '') }}">
                                     @error('task_name')
                                         <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
                                     @enderror
@@ -55,7 +61,7 @@
                                 <div class="mb-3">
                                     <label for="task_url" class="form-label">Task URL</label>
                                     <input type="text" class="form-control" id="task_url" name="task_url"
-                                        aria-describedby="Task URL" value="{{ old('task_url') ?? $task->url ?? '' }}">
+                                        aria-describedby="Task URL" value="{{ old('task_url') ?? ($task->url ?? '') }}">
                                     @error('task_url')
                                         <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
                                     @enderror

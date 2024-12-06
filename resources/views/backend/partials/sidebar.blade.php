@@ -39,15 +39,8 @@
                 <li class="nav-item {{ url()->current() == route('backend.proxy.view') ? 'active' : '' }}">
                     <a href="{{ route('backend.proxy.view') }}">
                         <span class="icon-holder">
-                           <i class="fas fa-globe"></i></span>
+                            <i class="fas fa-globe"></i></span>
                         <span class="title">Proxies</span>
-                    </a>
-                </li>
-                <li class="nav-item {{ url()->current() == route('backend.automation.view') ? 'active' : '' }}">
-                    <a href="{{ route('backend.automation.view') }}">
-                        <span class="icon-holder">
-                            <i class="fas fa-robot"></i> </span>
-                        <span class="title">Automation</span>
                     </a>
                 </li>
                 <li class="nav-item {{ url()->current() == route('backend.payment_card.view') ? 'active' : '' }}">
@@ -57,7 +50,13 @@
                         <span class="title">Payment Cards</span>
                     </a>
                 </li>
-
+                <li class="nav-item {{ url()->current() == route('backend.automation.view') ? 'active' : '' }}">
+                    <a href="{{ route('backend.automation.view') }}">
+                        <span class="icon-holder">
+                            <i class="fas fa-cog"></i> </span>
+                        <span class="title">Settings</span>
+                    </a>
+                </li>
             </ul>
         @endif
     </div>

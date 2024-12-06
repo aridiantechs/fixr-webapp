@@ -84,6 +84,7 @@ Route::group([
     ], function () {
         Route::get("/", [AutomationController::class, "index"])->name("view");
         Route::post("/store", [AutomationController::class, "store"])->name("store");
+        Route::post("/store/setting", [AutomationController::class, "store_setting"])->name("store.setting");
     });
 
     //payment cards routes

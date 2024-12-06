@@ -7,6 +7,7 @@ use App\Http\Resources\AutomationResource;
 use App\Models\Automation;
 use App\Models\PaymentCard;
 use App\Models\Proxy;
+use App\Models\Setting;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -69,10 +70,11 @@ class OrdersController extends Controller
     }
     public function get_automation_data(){
         $automation = Automation::first();
+        $number_of_instances = Setting::first()->meta_value ?? '0';
         if(!$automation){
             return api_response((Object) [], 400,'No automation found');
         }
-        return api_response((Object) new AutomationResource($automation), 200);
+        return api_response((Object) new AutomationResource($automation, $number_of_instances), 200);
     }
     public function get_task_data(){
         $task = Task::first();

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Automation;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -66,7 +67,8 @@ class AutomationController extends Controller
     public function index(Request $request)
     {
         $automation = Automation::first();
-        return view("backend.automations.automations", compact("automation"));
+        $setting = Setting::first();
+        return view("backend.automations.automations", compact("automation", "setting"));
     }
     public function store(Request $request)
     {
@@ -138,6 +140,22 @@ class AutomationController extends Controller
             return back()->with('error', 'Something went wrong...');
         }
 
+    }
+    public function  store_setting(Request $request){
+        $request->validate([
+            'number_of_instances'=> 'required|numeric|min:0|max:50',
+        ],[
+        ], [
+            'number_of_instances'=> 'number of instances'
+        ]);
+        $setting = Setting::firstOrNew();
+        $setting->meta_key = 'number_of_instances';
+        $setting->meta_value = $request->number_of_instances;
 
+        $saved = $setting->save();
+        if ($saved) {
+            return back()->with('setting_success','Setting saved...');
+        }
+        return back()->with('error','Something went wrong');
     }
 }
