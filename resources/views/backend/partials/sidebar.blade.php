@@ -50,8 +50,8 @@
                         <span class="title">Payment Cards</span>
                     </a>
                 </li>
-                <li class="nav-item {{ url()->current() == route('backend.automation.view') ? 'active' : '' }}">
-                    <a href="{{ route('backend.automation.view') }}">
+                <li class="nav-item {{ url()->current() == route('backend.setting.view') ? 'active' : '' }}">
+                    <a href="{{ route('backend.setting.view') }}">
                         <span class="icon-holder">
                             <i class="fas fa-cog"></i> </span>
                         <span class="title">Settings</span>

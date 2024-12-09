@@ -79,12 +79,12 @@ Route::group([
 
     //automation control routes
     Route::group([
-        "prefix" => "automations",
-        "as" => "automation."
+        "prefix" => "settings",
+        "as" => "setting."
     ], function () {
         Route::get("/", [AutomationController::class, "index"])->name("view");
-        Route::post("/store", [AutomationController::class, "store"])->name("store");
-        Route::post("/store/setting", [AutomationController::class, "store_setting"])->name("store.setting");
+        Route::post("/store/automation", [AutomationController::class, "store"])->name("store.automation");
+        Route::post("/store", [AutomationController::class, "store_setting"])->name("store.setting");
     });
 
     //payment cards routes
