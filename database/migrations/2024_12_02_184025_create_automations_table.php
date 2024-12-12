@@ -15,6 +15,7 @@ class CreateAutomationsTable extends Migration
     {
         Schema::create('automations', function (Blueprint $table) {
             $table->id();
+            $table->enum('automation_type', ['recurring', 'non_recurring']);
             $table->dateTime('start_date_time')->nullable();
             $table->dateTime('end_date_time')->nullable();
             $table->string('recurring_start_week_day')->nullable();

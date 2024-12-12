@@ -22,12 +22,12 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <div class="mt-3 mb-2">
                                 <h1>Settings</h1>
-                                <span class="text-secondary">
+                                {{-- <span class="text-secondary">
                                     Set the settings for the automation here
-                                </span>
+                                </span> --}}
                                 <div class="mt-2 mb-2">
                                     @if (session()->has('setting_success'))
                                         <div class="alert alert-success text-success">
@@ -37,7 +37,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12">
                             <div class="card ">
                                 <div class="card-body">
                                     <div class="m-t-30">
@@ -74,7 +74,7 @@
                         </div>
                     </div>
                 </div>
-                <hr style="width:100%;">
+                {{-- <hr style="width:100%;">
                 <div class="col-lg-12">
                     <div class="row">
                         <div class="col-md-6">
@@ -253,7 +253,7 @@
                         </div>
                     </div>
 
-                </div>
+                </div> --}}
                 {{-- <div class="col-lg-12">
                     <div class="card">
                         <div class="card-body">

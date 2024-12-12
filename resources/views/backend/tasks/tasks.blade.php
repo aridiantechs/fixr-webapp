@@ -4,7 +4,6 @@
 @endsection
 
 @section('styles')
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css">
     <style>
         .stats-icon {
             font-size: 27px;
@@ -24,119 +23,106 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h1>Task</h1>
+                            <h1>Tasks</h1>
+                            <div>
+                                <a href="{{ route('backend.tasks.create.view') }}" class="btn btn-primary"><i
+                                        class="fas fa-plus mx-1"></i>Add Task</a>
+                            </div>
                         </div>
                         <div class="mt-2 mb-2">
                             @if (session()->has('success'))
-                                <div class="alert alert-success text-success">{{ session()->get('success') }}
-                                </div>
+                                <div class="alert alert-success text-success">{{ session()->get('success') }}</div>
                             @endif
                         </div>
-                        <div class="m-t-30">
-                            <form action="{{ route('backend.tasks.store') }}" method="POST">
-                                @csrf
-                                <div class="mb-3">
-                                    <label for="task_name" class="form-label">Name</label>
-                                    <input type="text" class="form-control" id="task_name" name="task_name"
-                                        aria-describedby="Task Name" value="{{ old('task_name') ?? ($task->name ?? '') }}">
-                                    @error('task_name')
-                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="task_type" class="form-label">Select Type</label>
-                                    <select id="task_type" class="form-control" aria-label="Select Task Type"
-                                        name="task_type">
-                                        <option value="event" selected>Event</option>
-                                        <option value="organizer"
-                                            {{ old('task_type') || (isset($task) && $task->type === 'organizer') ? 'selected' : '' }}>
-                                            Organizer</option>
-                                    </select>
-                                    @error('task_type')
-                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <div class="mb-3">
-                                    <label for="task_url" class="form-label">Task URL</label>
-                                    <input type="text" class="form-control" id="task_url" name="task_url"
-                                        aria-describedby="Task URL" value="{{ old('task_url') ?? ($task->url ?? '') }}">
-                                    @error('task_url')
-                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                                <div class="mb-3">
-                                    <label for="task_keywords" class="form-label">Keywords</label>
-                                    <input type="text" class="form-control" id="task_keywords" name="keywords"
-                                        aria-describedby="Task Keywords"
-                                        value="{{ old('keywords') ?? (isset($task->keywords) ? $task->keywords : '') }}">
-
-                                    <small class="text-muted">Press enter after adding a keyword</small>
-                                    @error('keywords')
-                                        <div class="alert alert-danger mt-2 mb-1 text-danger">{{ $message }}</div>
-                                    @enderror
-                                </div>
-
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </form>
-
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-body">
+                        <hr>
                         <div class="m-t-30">
                             <div class="table-responsive" id="live_tracking_table">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Type</th>
-                                            <th>Name</th>
-                                            <th>URL</th>
-                                            <th>Keywords</th>
-                                            <th>Created at</th>
-                                            <th>Updated at</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if ($task)
-                                            @php
-                                                $created_at = isset($task->created_at)
-                                                    ? format_date_time($task->created_at)
-                                                    : 'N/A';
-                                                $updated_at = isset($task->updated_at)
-                                                    ? format_date_time($task->updated_at)
-                                                    : 'N/A';
-                                            @endphp
+                                @if (!empty($tasks))
+                                    <table class="table table-hover">
+                                        <thead>
                                             <tr>
-                                                <td>{{ $task->type ?? 'N/A' }}</td>
-                                                <td>{{ $task->name ?? 'N/A' }}</td>
-                                                <td>{{ $task->url ?? 'N/A' }}</td>
-                                                <td>
-                                                    @if ($task->keywords)
-                                                        @foreach (json_decode($task->keywords, true) as $keyword)
-                                                            <span class="badge bg-info">{{ $keyword }}</span>
-                                                        @endforeach
-                                                    @else
-                                                        N/A
-                                                    @endif
-                                                </td>
-                                                <td>{{ $created_at }}</td>
-                                                <td>{{ $updated_at }}</td>
-
+                                                <th>Type</th>
+                                                <th>Name</th>
+                                                <th>URL</th>
+                                                <th>Start Date</th>
+                                                <th>End Date</th>
+                                                <th>Recurring Start Day</th>
+                                                <th>Recurring End Day</th>
+                                                <th>Recurring Start Time</th>
+                                                <th>Recurring End Time</th>
+                                                <th>Keywords</th>
+                                                <th>Status</th>
+                                                <th>Actions</th>
+                                                {{-- <th>Created at</th> --}}
                                             </tr>
-                                        @else
-                                            <tr>
-                                                <td colspan="5">No task created.</td>
-                                            </tr>
-                                        @endif
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                            @foreach ($tasks as $task)
+                                                @php
+                                                    $created_at = isset($task->created_at)
+                                                        ? format_date_time($task->created_at)
+                                                        : 'N/A';
 
+                                                @endphp
+                                                <tr>
+                                                    <td>{{ $task->type ?? 'N/A' }}</td>
+                                                    <td>{{ $task->name ?? 'N/A' }}</td>
+                                                    <td
+                                                        style="max-width: 200px; word-wrap: break-word; white-space: normal;">
+                                                        {{ $task->url ?? 'N/A' }}</td>
+                                                    <td>{{ isset($task->start_date_time) ? format_date_time($task->start_date_time) : 'N/A' }}
+                                                    </td>
+                                                    <td>{{ isset($task->end_date_time) ? format_date_time($task->end_date_time) : 'N/A' }}
+                                                    </td>
+                                                    <td>{{ $task->recurring_start_week_day ?? 'N/A' }}</td>
+                                                    <td>{{ $task->recurring_end_week_day ?? 'N/A' }}</td>
+                                                    <td>{{ isset($task->recurring_start_time) ? format_time($task->recurring_start_time) : 'N/A' }}
+                                                    </td>
+                                                    <td>{{ isset($task->recurring_end_time) ? format_time($task->recurring_end_time) : 'N/A' }}
+                                                    </td>
+                                                    <td
+                                                        style="max-width: 250px; word-wrap: break-word; white-space: normal;">
+                                                        @if ($task->keywords)
+                                                            @foreach (json_decode($task->keywords, true) as $keyword)
+                                                                <span class="badge bg-info"
+                                                                    style="display: inline-block; margin-bottom: 5px;margin-left:3px; margin-right:3px;">{{ $keyword }}</span>
+                                                            @endforeach
+                                                        @else
+                                                            N/A
+                                                        @endif
+                                                    </td>
+
+                                                    <td style="color:white">
+                                                        <span
+                                                            class="badge
+                                                        {{ isset($task->is_enabled) ? ($task->is_enabled == '1' ? 'bg-success' : 'bg-danger') : 'bg-secondary' }}">
+                                                            {{ isset($task->is_enabled) ? ($task->is_enabled == '1' ? 'enabled' : 'disabled') : 'N/A' }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <a
+                                                            href="{{ route('backend.tasks.update.view', ['task' => $task]) }}">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a class="mx-1"
+                                                            href="{{ route('backend.tasks.delete', ['task_id' => $task->id]) }}">
+                                                            <i class="fas fa-trash-alt"></i>
+                                                        </a>
+
+                                                    </td>
+                                                    {{-- <td>{{ $created_at }}</td> --}}
+
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                @else
+                                    <div class="d-flex justify-content-center align-items-center" style="height:500px;">
+                                        <h1 class="text-secondary text-bold"><span class="mx-2"><i
+                                                    class="fas fa-exclamation-triangle"></i></span>No Task Found
+                                        </h1>
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -147,17 +133,4 @@
 @endsection
 @section('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const input = document.querySelector('#task_keywords');
-
-            // Initialize Tagify
-            const tagify = new Tagify(input, {
-                whitelist: [], // Optional: preload some keywords
-                maxTags: 20, // Limit the number of tags
-                placeholder: "Add keywords...",
-            });
-        });
-    </script>
 @endsection

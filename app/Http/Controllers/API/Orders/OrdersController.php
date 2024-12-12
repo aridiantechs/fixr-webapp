@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API\Orders;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\AutomationResource;
+use App\Http\Resources\TaskCollection;
 use App\Models\Automation;
 use App\Models\PaymentCard;
 use App\Models\Proxy;
@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Order;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Carbon;
 
 class OrdersController extends Controller
 {
@@ -68,19 +69,82 @@ class OrdersController extends Controller
         ];
         return api_response((Object) $data, 200);
     }
-    public function get_automation_data(){
-        $automation = Automation::first();
+    public function get_automation_data()
+    {
+        $tasks = Task::latest()
+            ->where('is_enabled', '1')
+            ->get()
+            ->filter(function ($task) {
+                if ($task->automation_type == 'non_recurring') {
+                    // Parse the start and end date-times
+                    $start_date_time = Carbon::parse($task->start_date_time);
+                    $end_date_time = Carbon::parse($task->end_date_time);
+
+                    // Check if the current time is within the start and end range
+                    return $start_date_time <= now() && now() < $end_date_time;
+                } else {
+                    // Get current day and time
+                    $currentDay = strtolower(now()->format('l')); // Current weekday as a string, e.g. 'Friday'
+                    $currentTime = now()->format('H:i'); // Current time in 24-hour format, e.g. '01:30'
+
+                    // Task's recurring week days
+                    $startWeekDay = strtolower($task->recurring_start_week_day); // Task start day of the week
+                    $endWeekDay = strtolower($task->recurring_end_week_day); // Task end day of the week
+                    $startTime = Carbon::parse($task->recurring_start_time)->format('H:i'); // Task start time in 24-hour format
+                    $endTime = Carbon::parse($task->recurring_end_time)->format('H:i'); // Task end time in 24-hour format
+
+                    // Map of weekdays to ensure proper comparison
+                    $daysMap = [
+                        'sunday' => 0,
+                        'monday' => 1,
+                        'tuesday' => 2,
+                        'wednesday' => 3,
+                        'thursday' => 4,
+                        'friday' => 5,
+                        'saturday' => 6,
+                    ];
+
+                    // Convert weekdays to numeric values
+                    $currentDayNumber = $daysMap[$currentDay];
+                    $startWeekDayNumber = $daysMap[$startWeekDay];
+                    $endWeekDayNumber = $daysMap[$endWeekDay];
+
+                    if ($startWeekDayNumber <= $currentDayNumber && $currentDayNumber <= $endWeekDayNumber) {
+
+                        if ($startWeekDayNumber == $endWeekDayNumber && $startWeekDayNumber == $currentDayNumber) {
+                            return $currentTime >= $startTime && $currentTime <= $endTime;
+                        }
+                        if ($startWeekDayNumber == $currentDayNumber && $currentDayNumber < $endWeekDayNumber) {
+                            return $currentTime >= $startTime;
+                        }
+                        if ($currentDayNumber == $endWeekDayNumber && $currentDayNumber > $startWeekDayNumber) {
+                            return $currentTime <= $endTime;
+                        }
+                        // If current day is between start and end days (exclusive), return true
+                        return true;
+                    }
+
+                    // Handle wrap-around case where start day is later in the week than the end day (e.g. Friday to Monday)
+                    if ($startWeekDayNumber > $endWeekDayNumber) {
+                        if ($currentDayNumber >= $startWeekDayNumber || $currentDayNumber <= $endWeekDayNumber) {
+                            return $currentTime >= $startTime && $currentTime <= $endTime;
+                        }
+                    }
+                    return false;
+                }
+            });
         $number_of_instances = Setting::first()->meta_value ?? '0';
-        if(!$automation){
-            return api_response((Object) [], 400,'No automation found');
+        if (!$tasks) {
+            return api_response((Object) [], 400, 'No task found');
         }
-        return api_response((Object) new AutomationResource($automation, $number_of_instances), 200);
+        return api_response((Object) new TaskCollection($tasks, $number_of_instances), 200);
     }
-    public function get_task_data(){
+    public function get_task_data()
+    {
         $task = Task::first();
-        if(!$task){
-            return api_response((Object) [], 400,'No task found');
+        if (!$task) {
+            return api_response((Object) [], 400, 'No task found');
         }
-        return api_response((Object)($task),200);
+        return api_response((Object) ($task), 200);
     }
 }
