@@ -40,7 +40,7 @@
                                 @if (!empty($tasks))
                                     <table class="table table-hover">
                                         <thead>
-                                            <tr>
+                                            <tr class="bg-grey">
                                                 <th>Type</th>
                                                 <th>Name</th>
                                                 <th>URL</th>
