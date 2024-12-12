@@ -37,10 +37,12 @@
                         @php
                             $payload = is_string($order->payload) ? json_decode($order->payload) : $order->payload;
                         @endphp
-                        @if (is_iterable((array)$payload))
+                        @if (is_iterable($payload))
                             @foreach ($payload as $key => $item)
                                 <b>{{ $key }}: </b>{{ $item }} <br>
                             @endforeach
+                        @else
+                            {{ $payload }}
                         @endif
                     </td>
                     <td>{{ $created_at }}</td>
