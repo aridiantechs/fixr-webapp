@@ -7,11 +7,13 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 class TaskCollection extends ResourceCollection
 {
     private $number_of_instances;
+    private $monitoring_status;
 
-    public function __construct($resource, $number_of_instances)
+    public function __construct($resource, $number_of_instances, $monitoring_status)
     {
         parent::__construct($resource);
         $this->number_of_instances = $number_of_instances;
+        $this->monitoring_status = $monitoring_status;
     }
     /**
      * Transform the resource collection into an array.
@@ -24,6 +26,7 @@ class TaskCollection extends ResourceCollection
         return [
             'tasks' => $this->collection,
             'number_of_instances' => $this->number_of_instances,
+            'monitoring_status' => $this->monitoring_status
         ];
     }
 }

@@ -55,13 +55,31 @@
                                                     aria-describedby="Number of instances"
                                                     value="{{ old('number_of_instances', isset($setting->meta_value) ? $setting->meta_value : '') }}">
                                                 <small class="text-secondary">Current instances
-                                                    : <b>{{ isset($setting->meta_value) ? $setting->meta_value : ' 0' }}</b></small>
+                                                    :
+                                                    <b>{{ isset($setting->meta_value) ? $setting->meta_value : ' 0' }}</b></small>
 
                                                 @error('number_of_instances')
                                                     <div class="alert alert-danger mt-2 mb-1 text-danger">
                                                         {{ $message }}
                                                     </div>
                                                 @enderror
+                                            </div>
+                                            <div class="mb-3">
+                                                    <label for="monitoring_status" class="form-label">Monitoring Status
+                                                    </label>
+                                                    <div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="monitoring_status"
+                                                            id="monitoring_enabled" value="enabled" checked>
+                                                        <label class="form-check-label" for="monitoring_enabled">Enabled</label>
+                                                    </div>
+                                                    <div class="form-check form-check-inline">
+                                                        <input class="form-check-input" type="radio" name="monitoring_status"
+                                                            id="monitoring_disabled" value="disabled"
+                                                            {{ old('monitoring_status') == 'disabled' || $setting->monitoring_status == '0' ? 'checked' : '' }}>
+                                                        <label class="form-check-label" for="monitoring_disabled">Disabled</label>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             <div class="d-flex justify-content-end mt-4">

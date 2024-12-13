@@ -144,13 +144,16 @@ class AutomationController extends Controller
     public function  store_setting(Request $request){
         $request->validate([
             'number_of_instances'=> 'required|numeric|min:0|max:50',
+            'monitoring_status' => 'required|in:enabled,disabled'
         ],[
         ], [
-            'number_of_instances'=> 'number of instances'
+            'number_of_instances'=> 'number of instances',
+            'monitoring_status' => 'monitoring status'
         ]);
         $setting = Setting::firstOrNew();
         $setting->meta_key = 'number_of_instances';
         $setting->meta_value = $request->number_of_instances;
+        $setting->monitoring_status = $request->monitoring_status === 'enabled' ? '1' : '0';
 
         $saved = $setting->save();
         if ($saved) {

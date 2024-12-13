@@ -71,6 +71,7 @@ class OrdersController extends Controller
     }
     public function get_automation_data()
     {
+        date_default_timezone_set('Asia/Karachi');
         $tasks = Task::latest()
             ->where('is_enabled', '1')
             ->get()
@@ -109,35 +110,44 @@ class OrdersController extends Controller
                     $startWeekDayNumber = $daysMap[$startWeekDay];
                     $endWeekDayNumber = $daysMap[$endWeekDay];
 
+
+
+
                     if ($startWeekDayNumber <= $currentDayNumber && $currentDayNumber <= $endWeekDayNumber) {
 
-                        if ($startWeekDayNumber == $endWeekDayNumber && $startWeekDayNumber == $currentDayNumber) {
+                        if ($startWeekDayNumber == $endWeekDayNumber && $startWeekDayNumber == $currentDayNumber)
                             return $currentTime >= $startTime && $currentTime <= $endTime;
-                        }
-                        if ($startWeekDayNumber == $currentDayNumber && $currentDayNumber < $endWeekDayNumber) {
+
+                        if ($startWeekDayNumber == $currentDayNumber && $currentDayNumber < $endWeekDayNumber)
                             return $currentTime >= $startTime;
-                        }
-                        if ($currentDayNumber == $endWeekDayNumber && $currentDayNumber > $startWeekDayNumber) {
+
+                        if ($currentDayNumber == $endWeekDayNumber && $currentDayNumber > $startWeekDayNumber)
                             return $currentTime <= $endTime;
-                        }
-                        // If current day is between start and end days (exclusive), return true
+
                         return true;
                     }
 
                     // Handle wrap-around case where start day is later in the week than the end day (e.g. Friday to Monday)
                     if ($startWeekDayNumber > $endWeekDayNumber) {
-                        if ($currentDayNumber >= $startWeekDayNumber || $currentDayNumber <= $endWeekDayNumber) {
-                            return $currentTime >= $startTime && $currentTime <= $endTime;
-                        }
+
+                        if ($startWeekDayNumber == $currentDayNumber && $currentDayNumber < $endWeekDayNumber)
+                            return $currentTime >= $startTime;
+
+                        if ($currentDayNumber == $endWeekDayNumber && $currentDayNumber > $startWeekDayNumber)
+                            return $currentTime <= $endTime;
+
+                        return true;
                     }
                     return false;
                 }
             });
-        $number_of_instances = Setting::first()->meta_value ?? '0';
+        $global_setting = Setting::first();
+        $number_of_instances = $global_setting->meta_value ?? '0';
+        $monitoring_status = isset($global_setting->monitoring_status) && $global_setting->monitoring_status == '1' ? 'enabled' : 'disabled';
         if (!$tasks) {
             return api_response((Object) [], 400, 'No task found');
         }
-        return api_response((Object) new TaskCollection($tasks, $number_of_instances), 200);
+        return api_response((Object) new TaskCollection($tasks, $number_of_instances, $monitoring_status), 200);
     }
     public function get_task_data()
     {
