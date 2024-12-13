@@ -27,6 +27,14 @@
             width: 1.5rem;
             height: 1.5rem;
         }
+
+        .custom-icon-class::before {
+            content: '\f07a';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 8px;
+            color: #149719;
+        }
     </style>
 @endsection
 
@@ -80,7 +88,7 @@
                         </div>
                         <div class="m-t-30">
                             <div class="table-responsive" id="live_tracking_table">
-                                <table class="table table-hover">
+                                <table class="table table-hover" id="orders_table">
                                     <thead>
                                         <tr class="bg-grey">
                                             {{-- <th class="bold">#</th> --}}
@@ -93,7 +101,7 @@
                                             {{-- <th>view order</th> --}}
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="live_tracking_table_body">
                                         <tr>
                                             <td colspan="6" class="p-0">
                                                 <div class="bg-info p-1">
@@ -129,10 +137,12 @@
                                                                 ? json_decode($order->payload)
                                                                 : $order->payload;
                                                         @endphp
-                                                        @if (is_iterable((array)$payload))
+                                                        @if (is_iterable($payload))
                                                             @foreach ($payload as $key => $item)
                                                                 <b>{{ $key }}: </b>{{ $item }} <br>
                                                             @endforeach
+                                                        @else
+                                                            {{ $payload }}
                                                         @endif
                                                     </td>
                                                     <td>{{ $created_at }}</td>
@@ -159,9 +169,25 @@
 @endsection
 @section('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/0.6.6/chartjs-plugin-zoom.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
     <script>
         $(document).ready(function() {
+            toastr.options = {
+                closeButton: true, // Adds a close button
+                progressBar: true, // Shows a progress bar
+                positionClass: 'toast-top-right', // Position of the toast
+                timeOut: 3000, // Duration in milliseconds
+                extendedTimeOut: 1000,
+                iconClass: 'toast-info',
+                toastClass: 'toast',
+                // Custom class for the icon
+            };
+
             setInterval(() => {
+                let old_table_rows_count = $('#live_tracking_table_body tr').length;
                 $.ajax({
                     url: "{{ route('backend.orders.liveTracking') }}",
                     type: "GET",
@@ -179,7 +205,13 @@
                     success: function(response, status, xhr) {
                         setTimeout(() => {
                             $("#spinner").html("");
-                            $("#live_tracking_table").html(response);
+                            $("#live_tracking_table_body").html(response);
+                            let current_rows_count = $("#live_tracking_table_body tr")
+                                .length;
+                            if (current_rows_count > old_table_rows_count) {
+                                toastr.info('New order added successfully!',
+                                    'Success');
+                            }
                         }, 1200);
                     },
                     error: function(xhr, status, response) {
